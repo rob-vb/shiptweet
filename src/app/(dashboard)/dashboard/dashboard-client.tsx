@@ -27,8 +27,12 @@ interface CommitWithSuggestions extends Commit {
   repository?: Repository;
 }
 
+interface CommitWithRepository extends Commit {
+  repository?: Repository;
+}
+
 interface SuggestionWithCommit extends TweetSuggestion {
-  commit?: CommitWithSuggestions | null;
+  commit?: CommitWithRepository | null;
 }
 
 interface DashboardClientProps {
