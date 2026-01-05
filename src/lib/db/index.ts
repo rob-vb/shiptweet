@@ -8,5 +8,3 @@ const connectionString = process.env.DATABASE_URL!;
 // For migrations and direct queries
 const client = postgres(connectionString);
 export const db = drizzle(client, { schema });
-
-export * from "./schema";

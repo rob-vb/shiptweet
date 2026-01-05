@@ -1,7 +1,8 @@
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
-import { db, commits, tweetSuggestions, users, type VoiceSettings, type Commit } from "@/lib/db";
+import { db } from "@/lib/db";
+import { commits, tweetSuggestions, users, type VoiceSettings, type Commit } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 const TWEET_TONES = ["casual", "professional", "excited", "technical"] as const;

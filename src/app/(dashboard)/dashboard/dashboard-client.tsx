@@ -20,7 +20,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import type { Repository, Commit, TweetSuggestion } from "@/lib/db";
+import type { Repository, Commit, TweetSuggestion } from "@/lib/db/schema";
 
 interface CommitWithSuggestions extends Commit {
   tweetSuggestions: TweetSuggestion[];

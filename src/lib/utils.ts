@@ -89,3 +89,7 @@ export function calculateCharCount(text: string): number {
 export function isValidTweetLength(text: string): boolean {
   return calculateCharCount(text) <= 280;
 }
+
+export function generateTwitterShareUrl(text: string): string {
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+}

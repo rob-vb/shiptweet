@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { calculateCharCount, isValidTweetLength } from "@/lib/utils";
-import { generateTwitterShareUrl } from "@/lib/twitter";
+import { calculateCharCount, isValidTweetLength, generateTwitterShareUrl } from "@/lib/utils";
 import {
   updateSuggestionContent,
   updateSuggestionStatus,
@@ -22,7 +21,7 @@ import {
   Trash2,
   Twitter,
 } from "lucide-react";
-import type { TweetSuggestion } from "@/lib/db";
+import type { TweetSuggestion } from "@/lib/db/schema";
 
 interface TweetCardProps {
   suggestion: TweetSuggestion;

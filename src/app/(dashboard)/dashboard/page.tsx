@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { db, repositories, commits, tweetSuggestions } from "@/lib/db";
+import { db } from "@/lib/db";
+import { repositories, commits, tweetSuggestions } from "@/lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { DashboardClient } from "./dashboard-client";
 

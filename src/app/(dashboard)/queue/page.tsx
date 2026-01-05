@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { db, tweetSuggestions } from "@/lib/db";
+import { db } from "@/lib/db";
+import { tweetSuggestions } from "@/lib/db/schema";
 import { eq, desc, and, or } from "drizzle-orm";
 import { QueueClient } from "./queue-client";
 

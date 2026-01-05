@@ -22,8 +22,8 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import type { GitHubRepo } from "@/lib/github";
-import type { Repository } from "@/lib/db";
+import type { GitHubRepo } from "@/types/github";
+import type { Repository } from "@/lib/db/schema";
 
 interface RepositorySelectorProps {
   onRepositoryConnected?: (repoId: string) => void;

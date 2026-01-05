@@ -1,4 +1,6 @@
-import { db, users, tweetSuggestions } from "@/lib/db";
+import "server-only";
+import { db } from "@/lib/db";
+import { users, tweetSuggestions } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 interface TwitterTokens {

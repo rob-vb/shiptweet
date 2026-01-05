@@ -1,14 +1,15 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { db, repositories, commits } from "@/lib/db";
+import { db } from "@/lib/db";
+import { repositories, commits } from "@/lib/db/schema";
 import {
   fetchUserRepositories,
   connectRepository,
   disconnectRepository,
   syncRepositoryCommits,
-  type GitHubRepo,
 } from "@/lib/github";
+import type { GitHubRepo } from "@/types/github";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

@@ -1,7 +1,8 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { db, users, type VoiceSettings } from "@/lib/db";
+import { db } from "@/lib/db";
+import { users, type VoiceSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { updateVoiceSettings } from "@/app/actions/user";
 import { Github, Twitter, Check, Settings, Mic2, Save } from "lucide-react";
-import type { User, VoiceSettings } from "@/lib/db";
+import type { User, VoiceSettings } from "@/lib/db/schema";
 
 interface SettingsClientProps {
   user: User;
