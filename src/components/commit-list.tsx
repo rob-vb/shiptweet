@@ -16,7 +16,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import type { Commit, TweetSuggestion, Repository } from "@/lib/db";
+import type { Commit, TweetSuggestion, Repository } from "@/lib/db/schema";
 
 interface CommitWithSuggestions extends Commit {
   tweetSuggestions: TweetSuggestion[];

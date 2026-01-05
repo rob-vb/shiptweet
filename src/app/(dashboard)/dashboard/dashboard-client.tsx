@@ -20,15 +20,19 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import type { Repository, Commit, TweetSuggestion } from "@/lib/db";
+import type { Repository, Commit, TweetSuggestion } from "@/lib/db/schema";
 
 interface CommitWithSuggestions extends Commit {
   tweetSuggestions: TweetSuggestion[];
   repository?: Repository;
 }
 
+interface CommitWithRepository extends Commit {
+  repository?: Repository;
+}
+
 interface SuggestionWithCommit extends TweetSuggestion {
-  commit?: CommitWithSuggestions | null;
+  commit?: CommitWithRepository | null;
 }
 
 interface DashboardClientProps {

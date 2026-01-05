@@ -16,7 +16,7 @@ ShipTweet transforms your GitHub commits into engaging tweets. Connect your repo
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router) + React 19
 - **Styling**: TailwindCSS
 - **Database**: PostgreSQL with Drizzle ORM
 - **Auth**: NextAuth.js v5 (GitHub + Twitter OAuth)

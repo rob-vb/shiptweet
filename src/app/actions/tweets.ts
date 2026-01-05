@@ -1,10 +1,11 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { db, tweetSuggestions, commits } from "@/lib/db";
+import { db } from "@/lib/db";
+import { tweetSuggestions, commits } from "@/lib/db/schema";
 import { processCommit, processMultipleCommits } from "@/lib/ai/generate-tweets";
 import { postTweet, scheduleTweet } from "@/lib/twitter";
-import { eq, and, desc, inArray } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function generateTweetsForCommit(commitId: string): Promise<{

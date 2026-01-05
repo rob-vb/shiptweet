@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TweetCard } from "@/components/tweet-card";
 import { MessageSquare, Send, Clock, CheckCircle } from "lucide-react";
-import type { TweetSuggestion, Commit, Repository } from "@/lib/db";
+import type { TweetSuggestion, Commit, Repository } from "@/lib/db/schema";
 
 interface SuggestionWithCommit extends TweetSuggestion {
   commit?: (Commit & { repository?: Repository }) | null;

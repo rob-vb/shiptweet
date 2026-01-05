@@ -1,6 +1,12 @@
+import "server-only";
 import { Octokit } from "octokit";
-import { db, users, repositories, commits, type FileChange } from "@/lib/db";
+import { db } from "@/lib/db";
+import { users, repositories, commits, type FileChange } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+
+// Re-export types for server-side usage
+export type { GitHubRepo, GitHubCommit, FileChange } from "@/types/github";
+import type { GitHubRepo } from "@/types/github";
 
 export async function getOctokit(userId: string): Promise<Octokit | null> {
   const user = await db.query.users.findFirst({
@@ -12,17 +18,6 @@ export async function getOctokit(userId: string): Promise<Octokit | null> {
   }
 
   return new Octokit({ auth: user.githubAccessToken });
-}
-
-export interface GitHubRepo {
-  id: number;
-  name: string;
-  full_name: string;
-  description: string | null;
-  private: boolean;
-  default_branch: string;
-  html_url: string;
-  pushed_at: string | null;
 }
 
 export async function fetchUserRepositories(userId: string): Promise<GitHubRepo[]> {
@@ -49,16 +44,7 @@ export async function fetchUserRepositories(userId: string): Promise<GitHubRepo[
   }));
 }
 
-export interface GitHubCommit {
-  sha: string;
-  message: string;
-  author: string | null;
-  authorEmail: string | null;
-  committedAt: Date;
-  additions: number;
-  deletions: number;
-  filesChanged: FileChange[];
-}
+import type { GitHubCommit, FileChange as GitHubFileChange } from "@/types/github";
 
 export async function fetchRepositoryCommits(
   userId: string,
