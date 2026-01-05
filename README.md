@@ -1,8 +1,8 @@
-# ShipTweet
+# Commeet
 
 **Build in Public, Effortlessly**
 
-ShipTweet transforms your GitHub commits into engaging tweets. Connect your repos, and AI writes your build-in-public updates while you focus on shipping.
+Commeet transforms your GitHub commits into engaging tweets. Connect your repos, and AI writes your build-in-public updates while you focus on shipping.
 
 ## Features
 
