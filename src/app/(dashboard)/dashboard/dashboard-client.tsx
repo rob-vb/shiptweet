@@ -18,6 +18,9 @@ import {
   MessageSquare,
   Twitter,
   AlertCircle,
+  Zap,
+  ChevronRight,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import type { Repository, Commit, TweetSuggestion } from "@/lib/db/schema";
@@ -85,7 +88,6 @@ export function DashboardClient({
     setGenerating(true);
     try {
       await generateTweetsForCommits(unprocessedCommits.map((c) => c.id));
-      // Refresh commits
       const newCommits = await getRepositoryCommits(selectedRepo, {
         since: dateRange.since,
         until: dateRange.until,
@@ -121,23 +123,25 @@ export function DashboardClient({
     <div className="space-y-6">
       {/* Twitter Connection Warning */}
       {!hasTwitter && (
-        <Card className="border-yellow-200 bg-yellow-50">
+        <Card className="border-secondary/30 bg-secondary/5">
           <CardContent className="flex items-center justify-between py-4">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-yellow-600" />
+              <div className="w-10 h-10 rounded-sm bg-secondary/10 flex items-center justify-center">
+                <AlertCircle className="h-5 w-5 text-secondary" />
+              </div>
               <div>
-                <p className="font-medium text-yellow-900">
-                  Connect X (Twitter) for direct posting
+                <p className="font-medium text-foreground">
+                  Connect X for direct posting
                 </p>
-                <p className="text-sm text-yellow-700">
+                <p className="text-sm text-muted-foreground">
                   You can still copy tweets to clipboard without connecting.
                 </p>
               </div>
             </div>
             <Link href="/settings">
-              <Button variant="outline" size="sm">
-                <Twitter className="mr-2 h-4 w-4" />
-                Connect X
+              <Button variant="outline" size="sm" className="gap-2">
+                <Twitter className="h-4 w-4" />
+                Connect
               </Button>
             </Link>
           </CardContent>
@@ -145,41 +149,60 @@ export function DashboardClient({
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <GitBranch className="h-5 w-5 text-muted-foreground" />
-              <span className="text-2xl font-bold">{stats.totalRepos}</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card variant="embossed" className="group hover-lift">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-sm bg-accent/10 flex items-center justify-center">
+                <GitBranch className="h-5 w-5 text-accent" />
+              </div>
+              <span className="text-3xl font-bold font-mono">{stats.totalRepos}</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Connected Repos</p>
+            <p className="text-sm text-muted-foreground uppercase tracking-wider">
+              Repositories
+            </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <FileCode className="h-5 w-5 text-muted-foreground" />
-              <span className="text-2xl font-bold">{stats.totalCommits}</span>
+
+        <Card variant="embossed" className="group hover-lift">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-sm bg-secondary/10 flex items-center justify-center">
+                <FileCode className="h-5 w-5 text-secondary" />
+              </div>
+              <span className="text-3xl font-bold font-mono">{stats.totalCommits}</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Recent Commits</p>
+            <p className="text-sm text-muted-foreground uppercase tracking-wider">
+              Commits
+            </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-muted-foreground" />
-              <span className="text-2xl font-bold">{stats.pendingTweets}</span>
+
+        <Card variant="embossed" className="group hover-lift">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-sm bg-blue-500/10 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-blue-400" />
+              </div>
+              <span className="text-3xl font-bold font-mono">{stats.pendingTweets}</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Pending Tweets</p>
+            <p className="text-sm text-muted-foreground uppercase tracking-wider">
+              Pending
+            </p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
-              <Send className="h-5 w-5 text-muted-foreground" />
-              <span className="text-2xl font-bold">{stats.postedTweets}</span>
+
+        <Card variant="embossed" className="group hover-lift">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-sm bg-success/10 flex items-center justify-center">
+                <Send className="h-5 w-5 text-success" />
+              </div>
+              <span className="text-3xl font-bold font-mono">{stats.postedTweets}</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">Posted Tweets</p>
+            <p className="text-sm text-muted-foreground uppercase tracking-wider">
+              Posted
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -187,11 +210,26 @@ export function DashboardClient({
       {/* Pending Suggestions */}
       {pendingSuggestions.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-brand-500" />
-              Ready to Post
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-sm bg-accent/10 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-accent" />
+              </div>
+              <div>
+                <CardTitle className="text-base">Ready to Post</CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {pendingSuggestions.length} suggestions waiting
+                </p>
+              </div>
+            </div>
+            {pendingSuggestions.length > 4 && (
+              <Link href="/queue">
+                <Button variant="ghost" size="sm" className="gap-1 text-xs">
+                  View All
+                  <ArrowRight className="h-3 w-3" />
+                </Button>
+              </Link>
+            )}
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 md:grid-cols-2">
@@ -199,15 +237,6 @@ export function DashboardClient({
                 <TweetCard key={suggestion.id} suggestion={suggestion} showCommitInfo />
               ))}
             </div>
-            {pendingSuggestions.length > 4 && (
-              <div className="mt-4 text-center">
-                <Link href="/queue">
-                  <Button variant="outline">
-                    View All {pendingSuggestions.length} Suggestions
-                  </Button>
-                </Link>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
@@ -215,13 +244,20 @@ export function DashboardClient({
       {/* Repository & Commits Section */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle className="text-lg">Commits</CardTitle>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-sm bg-muted flex items-center justify-center">
+                <FileCode className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <CardTitle className="text-base">Commits</CardTitle>
+            </div>
+
             <div className="flex flex-wrap items-center gap-2">
+              {/* Repository selector */}
               <select
                 value={selectedRepo}
                 onChange={(e) => handleRepoChange(e.target.value)}
-                className="border rounded-md px-3 py-2 text-sm bg-white"
+                className="h-8 px-3 text-sm bg-input border border-border rounded-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/30 transition-colors"
               >
                 {repositories.map((repo) => (
                   <option key={repo.id} value={repo.id}>
@@ -229,19 +265,35 @@ export function DashboardClient({
                   </option>
                 ))}
               </select>
-              <Button variant="outline" size="sm" onClick={handleSync} disabled={syncing}>
-                <RefreshCw className={`h-4 w-4 mr-1 ${syncing ? "animate-spin" : ""}`} />
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSync}
+                disabled={syncing}
+                className="gap-1.5"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
                 Sync
               </Button>
+
               {unprocessedCount > 0 && (
-                <Button size="sm" onClick={handleGenerateAll} disabled={generating}>
-                  <Sparkles className="h-4 w-4 mr-1" />
-                  Generate All ({unprocessedCount})
+                <Button
+                  size="sm"
+                  onClick={handleGenerateAll}
+                  disabled={generating}
+                  className="gap-1.5"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Generate ({unprocessedCount})
                 </Button>
               )}
             </div>
           </div>
-          <DateRangePicker onRangeChange={handleDateRangeChange} />
+
+          <div className="mt-4">
+            <DateRangePicker onRangeChange={handleDateRangeChange} />
+          </div>
         </CardHeader>
         <CardContent>
           <CommitList commits={commits} />

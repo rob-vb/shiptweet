@@ -48,15 +48,15 @@ export function getTweetabilityLabel(score: number | null): {
   className: string;
 } {
   if (score === null) {
-    return { label: "Unscored", className: "score-low" };
+    return { label: "Unscored", className: "bg-muted text-muted-foreground border-border" };
   }
   if (score >= 70) {
-    return { label: "High", className: "score-high" };
+    return { label: "High", className: "bg-success/15 text-success border-success/30" };
   }
   if (score >= 40) {
-    return { label: "Medium", className: "score-medium" };
+    return { label: "Medium", className: "bg-secondary/15 text-secondary border-secondary/30" };
   }
-  return { label: "Low", className: "score-low" };
+  return { label: "Low", className: "bg-muted text-muted-foreground border-border" };
 }
 
 export function getCommitTypeEmoji(type: string | null): string {

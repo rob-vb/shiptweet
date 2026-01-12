@@ -9,11 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Core semantic colors from CSS variables
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -33,6 +35,7 @@ const config: Config = {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          muted: "hsl(var(--accent-muted))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -41,94 +44,91 @@ const config: Config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+          elevated: "hsl(var(--card-elevated))",
         },
-        // Terminal-specific colors
-        terminal: {
-          green: "#20ff4d",
-          "green-dim": "#0d7a24",
-          amber: "#ffb020",
-          "amber-dim": "#7a5610",
-          red: "#ff3333",
-          cyan: "#00ffff",
-          bg: "#0d1117",
-          "bg-light": "#161b22",
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
         },
-        // Keep brand for backwards compatibility but map to terminal green
+
+        // Brand colors for backwards compatibility
         brand: {
-          50: "#e6ffec",
-          100: "#b3ffc6",
-          200: "#80ffa0",
-          300: "#4dff7a",
-          400: "#20ff4d",
-          500: "#20ff4d",
-          600: "#1acc3e",
-          700: "#14992e",
-          800: "#0d7a24",
-          900: "#075c1a",
-          950: "#033d10",
+          50: "#fff7ed",
+          100: "#ffedd5",
+          200: "#fed7aa",
+          300: "#fdba74",
+          400: "#fb923c",
+          500: "#ff6b4a", // Electric Coral
+          600: "#ea580c",
+          700: "#c2410c",
+          800: "#9a3412",
+          900: "#7c2d12",
+          950: "#431407",
         },
       },
+
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius))",
-        sm: "calc(var(--radius))",
+        lg: "var(--radius-lg)",
+        md: "var(--radius)",
+        sm: "calc(var(--radius) - 2px)",
       },
+
       fontFamily: {
-        mono: [
-          "JetBrains Mono",
-          "Fira Code",
-          "SF Mono",
-          "Monaco",
-          "Inconsolata",
-          "Roboto Mono",
-          "monospace",
-        ],
+        sans: ["Satoshi", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        mono: ["JetBrains Mono", "Fira Code", "monospace"],
       },
+
+      fontSize: {
+        "display-lg": ["4.5rem", { lineHeight: "1", letterSpacing: "-0.02em" }],
+        "display": ["3.5rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "display-sm": ["2.5rem", { lineHeight: "1.2", letterSpacing: "-0.02em" }],
+      },
+
       animation: {
-        blink: "blink 1s step-end infinite",
-        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
-        typing: "typing 2s steps(30, end)",
-        flicker: "flicker 4s infinite",
-        boot: "boot 0.3s ease-out forwards",
-        scanline: "scanline 8s linear infinite",
+        "fade-in": "fadeIn 0.4s ease-out forwards",
+        "slide-in": "slideIn 0.3s ease-out forwards",
+        "scale-in": "scaleIn 0.2s ease-out forwards",
+        "pulse-accent": "pulse-accent 2s ease-in-out infinite",
+        "shimmer": "shimmer 1.5s ease-in-out infinite",
       },
+
       keyframes: {
-        blink: {
-          "50%": { opacity: "0" },
+        fadeIn: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
-        "pulse-glow": {
-          "0%, 100%": {
-            textShadow: "0 0 5px hsl(120 100% 55% / 0.5)",
-          },
-          "50%": {
-            textShadow: "0 0 20px hsl(120 100% 55% / 0.8)",
-          },
+        slideIn: {
+          from: { opacity: "0", transform: "translateX(-8px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
         },
-        typing: {
-          from: { width: "0" },
-          to: { width: "100%" },
+        scaleIn: {
+          from: { opacity: "0", transform: "scale(0.95)" },
+          to: { opacity: "1", transform: "scale(1)" },
         },
-        flicker: {
-          "0%, 100%": { opacity: "1" },
-          "92%": { opacity: "1" },
-          "93%": { opacity: "0.8" },
-          "94%": { opacity: "1" },
-          "95%": { opacity: "0.9" },
-          "96%": { opacity: "1" },
+        "pulse-accent": {
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--accent) / 0.4)" },
+          "50%": { boxShadow: "0 0 0 8px hsl(var(--accent) / 0)" },
         },
-        boot: {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        scanline: {
-          "0%": { transform: "translateY(-100%)" },
-          "100%": { transform: "translateY(100vh)" },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
+
       boxShadow: {
-        glow: "0 0 10px hsl(120 100% 55% / 0.3)",
-        "glow-lg": "0 0 20px hsl(120 100% 55% / 0.5)",
-        "glow-amber": "0 0 10px hsl(45 100% 55% / 0.3)",
+        glow: "0 0 20px hsl(var(--accent) / 0.3)",
+        "glow-lg": "0 0 40px hsl(var(--accent) / 0.4)",
+        embossed:
+          "inset 0 1px 0 0 hsl(var(--foreground) / 0.03), 0 1px 3px 0 hsl(0 0% 0% / 0.3), 0 4px 12px 0 hsl(0 0% 0% / 0.2)",
+        card: "0 1px 2px hsl(0 0% 0% / 0.2), 0 4px 16px hsl(0 0% 0% / 0.15)",
+      },
+
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-mesh":
+          "radial-gradient(at 40% 20%, hsl(var(--accent) / 0.08) 0px, transparent 50%), radial-gradient(at 80% 0%, hsl(var(--secondary) / 0.06) 0px, transparent 50%)",
+        noise:
+          "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
       },
     },
   },

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,90 +14,104 @@ import {
   Twitter,
   Menu,
   X,
+  LayoutDashboard,
+  GitBranch,
+  ListTodo,
 } from "lucide-react";
 import { useState } from "react";
+
+const navItems = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/repositories", label: "Repositories", icon: GitBranch },
+  { href: "/queue", label: "Queue", icon: ListTodo },
+];
 
 export function Navbar() {
   const { data: session } = useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <nav className="border-b bg-white">
+    <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2">
-              <Zap className="h-8 w-8 text-brand-500" />
-              <span className="text-xl font-bold">Commeet</span>
+        <div className="flex justify-between h-14">
+          {/* Logo & Navigation */}
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-7 h-7 bg-accent rounded-sm flex items-center justify-center group-hover:shadow-glow transition-shadow">
+                <Zap className="h-4 w-4 text-accent-foreground" />
+              </div>
+              <span className="text-base font-bold tracking-tight">commeet</span>
             </Link>
 
             {session && (
-              <div className="hidden md:flex items-center ml-8 gap-4">
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/repositories"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Repositories
-                </Link>
-                <Link
-                  href="/queue"
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Tweet Queue
-                </Link>
+              <div className="hidden md:flex items-center gap-1">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`nav-item ${isActive ? "nav-item-active" : ""}`}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* Right side */}
+          <div className="flex items-center gap-3">
             {session ? (
               <>
-                <div className="hidden md:flex items-center gap-2">
+                {/* Connection badges - desktop */}
+                <div className="hidden lg:flex items-center gap-2">
                   {session.user.hasGithub && (
-                    <Badge variant="success" className="gap-1">
+                    <Badge variant="success" className="gap-1.5">
                       <Github className="h-3 w-3" />
-                      GitHub
+                      <span className="text-[10px] uppercase tracking-wider">Connected</span>
                     </Badge>
                   )}
                   {session.user.hasTwitter && (
-                    <Badge variant="success" className="gap-1">
+                    <Badge variant="accent" className="gap-1.5">
                       <Twitter className="h-3 w-3" />
-                      Twitter
+                      <span className="text-[10px] uppercase tracking-wider">Connected</span>
                     </Badge>
                   )}
                 </div>
 
+                {/* Settings */}
                 <Link href="/settings">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground">
                     <Settings className="h-4 w-4" />
                   </Button>
                 </Link>
 
-                <div className="flex items-center gap-3">
+                {/* User menu */}
+                <div className="flex items-center gap-2 pl-2 border-l border-border">
                   {session.user.image && (
                     <Image
                       src={session.user.image}
                       alt={session.user.name || "User"}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
+                      width={28}
+                      height={28}
+                      className="rounded-sm ring-1 ring-border"
                     />
                   )}
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => signOut({ callbackUrl: "/" })}
+                    className="text-muted-foreground hover:text-destructive"
                   >
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
 
+                {/* Mobile menu toggle */}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -112,9 +127,9 @@ export function Navbar() {
               </>
             ) : (
               <Link href="/auth/signin">
-                <Button>
-                  <Github className="mr-2 h-4 w-4" />
-                  Sign in with GitHub
+                <Button size="sm" className="gap-2">
+                  <Github className="h-4 w-4" />
+                  Sign in
                 </Button>
               </Link>
             )}
@@ -123,36 +138,46 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {session && mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <div className="flex flex-col gap-2">
-              <Link
-                href="/dashboard"
-                className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/repositories"
-                className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Repositories
-              </Link>
-              <Link
-                href="/queue"
-                className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Tweet Queue
-              </Link>
+          <div className="md:hidden py-3 border-t border-border/50 animate-fade-in">
+            <div className="flex flex-col gap-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`nav-item ${isActive ? "nav-item-active" : ""}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
               <Link
                 href="/settings"
-                className="px-3 py-2 text-sm font-medium hover:bg-muted rounded-md"
+                className="nav-item"
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <Settings className="h-4 w-4" />
                 Settings
               </Link>
+
+              {/* Mobile badges */}
+              <div className="flex items-center gap-2 px-3 pt-3 mt-2 border-t border-border/50">
+                {session.user.hasGithub && (
+                  <Badge variant="success" className="gap-1">
+                    <Github className="h-3 w-3" />
+                    GitHub
+                  </Badge>
+                )}
+                {session.user.hasTwitter && (
+                  <Badge variant="accent" className="gap-1">
+                    <Twitter className="h-3 w-3" />
+                    X
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         )}
