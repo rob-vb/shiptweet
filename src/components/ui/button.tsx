@@ -5,31 +5,53 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "destructive";
-  size?: "sm" | "md" | "lg";
+  variant?: "default" | "secondary" | "outline" | "ghost" | "destructive";
+  size?: "sm" | "md" | "lg" | "icon";
   isLoading?: boolean;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant = "primary", size = "md", isLoading, children, disabled, ...props },
+    { className, variant = "default", size = "md", isLoading, children, disabled, ...props },
     ref
   ) => {
-    const baseStyles =
-      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+    const baseStyles = cn(
+      "inline-flex items-center justify-center font-medium transition-all duration-200",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+      "disabled:opacity-50 disabled:pointer-events-none",
+      "active:scale-[0.98]"
+    );
 
     const variants = {
-      primary: "bg-brand-500 text-white hover:bg-brand-600",
-      secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-      outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-      ghost: "hover:bg-accent hover:text-accent-foreground",
-      destructive: "bg-red-500 text-white hover:bg-red-600",
+      default: cn(
+        "bg-accent text-accent-foreground",
+        "hover:bg-accent/90",
+        "shadow-[0_0_20px_hsl(var(--accent)/0.3)]",
+        "hover:shadow-[0_0_30px_hsl(var(--accent)/0.4)]"
+      ),
+      secondary: cn(
+        "bg-card border border-border text-foreground",
+        "hover:bg-card-elevated hover:border-border/80"
+      ),
+      outline: cn(
+        "border border-border bg-transparent text-foreground",
+        "hover:bg-muted hover:border-accent/50"
+      ),
+      ghost: cn(
+        "text-muted-foreground bg-transparent",
+        "hover:bg-muted hover:text-foreground"
+      ),
+      destructive: cn(
+        "bg-destructive text-destructive-foreground",
+        "hover:bg-destructive/90"
+      ),
     };
 
     const sizes = {
-      sm: "h-9 px-3 text-sm",
-      md: "h-10 px-4 py-2",
-      lg: "h-11 px-8 text-lg",
+      sm: "h-8 px-3 text-sm rounded-sm",
+      md: "h-10 px-5 py-2 rounded-sm",
+      lg: "h-12 px-8 text-base rounded-sm",
+      icon: "h-9 w-9 rounded-sm",
     };
 
     return (

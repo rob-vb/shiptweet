@@ -1,51 +1,72 @@
+/* Import Satoshi font - must be before @tailwind */
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * COMMEET DESIGN SYSTEM
+ * Editorial meets Developer Tooling
+ * "The Verge meets VS Code"
+ */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 48%;
-    --radius: 0.5rem;
-  }
+    /* Rich dark palette */
+    --background: 0 0% 4%;
+    --background-elevated: 0 0% 6%;
+    --background-hover: 0 0% 8%;
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 48%;
+    --foreground: 0 0% 95%;
+    --foreground-muted: 0 0% 60%;
+    --foreground-subtle: 0 0% 40%;
+
+    /* Card surfaces */
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 95%;
+    --card-elevated: 0 0% 9%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Signature accent: Electric Coral */
+    --accent: 14 100% 64%;
+    --accent-foreground: 0 0% 4%;
+    --accent-muted: 14 60% 50%;
+
+    /* Secondary: Warm Gold */
+    --secondary: 40 80% 55%;
+    --secondary-foreground: 0 0% 4%;
+
+    /* Semantic colors */
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Git colors */
+    --git-add: 142 70% 45%;
+    --git-delete: 0 60% 50%;
+    --git-modify: 40 80% 55%;
+
+    /* UI elements */
+    --border: 0 0% 15%;
+    --border-subtle: 0 0% 12%;
+    --input: 0 0% 10%;
+    --ring: 14 100% 64%;
+
+    /* Muted surfaces */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+
+    /* Primary (same as accent for this theme) */
+    --primary: 14 100% 64%;
+    --primary-foreground: 0 0% 4%;
+
+    /* Radius - sharp with occasional softness */
+    --radius: 4px;
+    --radius-lg: 8px;
   }
 }
 
@@ -53,62 +74,406 @@
   * {
     @apply border-border;
   }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-feature-settings: "ss01", "ss02", "cv01";
   }
+
+  /* Typographic scale */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  h1 { @apply text-5xl md:text-6xl lg:text-7xl; }
+  h2 { @apply text-3xl md:text-4xl; }
+  h3 { @apply text-xl md:text-2xl; }
+
+  /* Code/monospace elements */
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-feature-settings: "liga" 1, "calt" 1;
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsl(var(--accent) / 0.3);
+    color: hsl(var(--foreground));
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
+
+/* Noise texture overlay */
+.noise {
+  position: relative;
+}
+
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Gradient mesh backgrounds */
+.gradient-mesh {
+  background:
+    radial-gradient(at 40% 20%, hsl(var(--accent) / 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsl(var(--secondary) / 0.06) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsl(var(--accent) / 0.04) 0px, transparent 50%);
+}
+
+/* Embossed card effect */
+.card-embossed {
+  background: hsl(var(--card));
+  box-shadow:
+    inset 0 1px 0 0 hsl(var(--foreground) / 0.03),
+    0 1px 3px 0 hsl(0 0% 0% / 0.3),
+    0 4px 12px 0 hsl(0 0% 0% / 0.2);
+}
+
+/* Soft inner shadow for inputs */
+.input-inset {
+  box-shadow:
+    inset 0 2px 4px 0 hsl(0 0% 0% / 0.3),
+    inset 0 0 0 1px hsl(var(--border));
 }
 
 @layer components {
+  /* Button variants */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+    @apply inline-flex items-center justify-center font-medium transition-all duration-200;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
-    @apply btn bg-brand-500 text-white hover:bg-brand-600 h-10 py-2 px-4;
+    @apply btn px-5 py-2.5 bg-accent text-accent-foreground;
+    @apply hover:bg-accent/90;
+    @apply shadow-[0_0_20px_hsl(var(--accent)/0.3)];
+    @apply hover:shadow-[0_0_30px_hsl(var(--accent)/0.4)];
   }
 
   .btn-secondary {
-    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 py-2 px-4;
-  }
-
-  .btn-outline {
-    @apply btn border border-input hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+    @apply btn px-5 py-2.5 bg-card border border-border text-foreground;
+    @apply hover:bg-card-elevated hover:border-border/80;
   }
 
   .btn-ghost {
-    @apply btn hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+    @apply btn px-4 py-2 text-muted-foreground;
+    @apply hover:bg-muted hover:text-foreground;
   }
 
   .btn-sm {
-    @apply h-9 px-3 rounded-md;
+    @apply px-3 py-1.5 text-sm;
   }
 
   .btn-lg {
-    @apply h-11 px-8 rounded-md;
+    @apply px-8 py-3 text-lg;
   }
 
+  /* Card styles */
   .card {
-    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+    @apply bg-card border border-border;
+    border-radius: var(--radius);
   }
 
+  .card-interactive {
+    @apply card transition-all duration-200;
+    @apply hover:border-border/80 hover:bg-card-elevated;
+  }
+
+  /* Tweet card - the star of the show */
+  .tweet-card {
+    @apply relative overflow-hidden;
+    @apply bg-gradient-to-b from-card to-card-elevated;
+    @apply border border-border;
+    border-radius: var(--radius-lg);
+    box-shadow:
+      0 1px 2px hsl(0 0% 0% / 0.2),
+      0 4px 16px hsl(0 0% 0% / 0.15),
+      inset 0 1px 0 hsl(var(--foreground) / 0.02);
+  }
+
+  .tweet-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.015;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Input styles */
   .input {
-    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply w-full px-4 py-2.5 bg-input border border-border text-foreground;
+    @apply placeholder:text-muted-foreground;
+    @apply focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30;
+    @apply transition-all duration-200;
+    border-radius: var(--radius);
   }
 
-  .label {
-    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  .input-inset {
+    @apply input;
+    box-shadow: inset 0 2px 4px hsl(0 0% 0% / 0.2);
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium;
+    border-radius: var(--radius);
+  }
+
+  .badge-accent {
+    @apply badge bg-accent/15 text-accent border border-accent/30;
+  }
+
+  .badge-muted {
+    @apply badge bg-muted text-muted-foreground;
+  }
+
+  .badge-success {
+    @apply badge bg-success/15 text-success border border-success/30;
+  }
+
+  /* Tweetability score indicator */
+  .score-ring {
+    @apply relative inline-flex items-center justify-center;
+  }
+
+  .score-ring svg {
+    transform: rotate(-90deg);
+  }
+
+  .score-high { @apply text-success; }
+  .score-medium { @apply text-secondary; }
+  .score-low { @apply text-muted-foreground; }
+
+  /* Commit message styling */
+  .commit-message {
+    @apply font-mono text-sm leading-relaxed;
+  }
+
+  /* Diff styling */
+  .diff-add {
+    @apply bg-success/10 text-success border-l-2 border-success;
+  }
+
+  .diff-delete {
+    @apply bg-destructive/10 text-destructive border-l-2 border-destructive;
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply p-5 bg-card border border-border;
+    border-radius: var(--radius);
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  .stat-label {
+    @apply text-sm text-muted-foreground mt-1;
+  }
+
+  /* Sidebar navigation */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground;
+    @apply hover:text-foreground hover:bg-muted;
+    @apply transition-colors duration-150;
+    border-radius: var(--radius);
+  }
+
+  .nav-item-active {
+    @apply nav-item text-foreground bg-muted;
   }
 }
 
-/* Tweetability score badges */
-.score-high {
-  @apply bg-green-100 text-green-800 border-green-200;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.score-medium {
-  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-.score-low {
-  @apply bg-gray-100 text-gray-600 border-gray-200;
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-accent {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.4); }
+  50% { box-shadow: 0 0 0 8px hsl(var(--accent) / 0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+.animate-pulse-accent {
+  animation: pulse-accent 2s ease-in-out infinite;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* Shimmer loading effect */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Typewriter effect for AI generation */
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid hsl(var(--accent));
+  animation:
+    typewriter 2s steps(40) forwards,
+    blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+/* Copy success animation */
+.copy-success {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Hover lift effect */
+.hover-lift {
+  @apply transition-transform duration-200;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Focus ring */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}
+
+/* Glow effect on accent elements */
+.glow-accent {
+  box-shadow: 0 0 20px hsl(var(--accent) / 0.3);
+}
+
+/* Character count indicator */
+.char-count {
+  @apply text-xs font-mono;
+}
+
+.char-count-ok { @apply text-muted-foreground; }
+.char-count-warning { @apply text-secondary; }
+.char-count-error { @apply text-destructive; }
+
+/* Tone selector */
+.tone-option {
+  @apply px-4 py-2 text-sm border border-border bg-card;
+  @apply hover:border-accent/50 hover:bg-card-elevated;
+  @apply transition-all duration-150 cursor-pointer;
+  border-radius: var(--radius);
+}
+
+.tone-option-selected {
+  @apply tone-option border-accent bg-accent/10 text-accent;
+}
+
+/* Tweet type badge colors */
+.tweet-type-shipped { @apply bg-success/15 text-success; }
+.tweet-type-progress { @apply bg-accent/15 text-accent; }
+.tweet-type-technical { @apply bg-blue-500/15 text-blue-400; }
+.tweet-type-milestone { @apply bg-secondary/15 text-secondary; }
+
+/* Scrollable horizontal container */
+.scroll-x {
+  @apply flex gap-4 overflow-x-auto pb-4;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-x > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

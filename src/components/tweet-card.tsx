@@ -15,11 +15,14 @@ import {
   Copy,
   Check,
   X,
-  Send,
   Edit2,
   ExternalLink,
   Trash2,
   Twitter,
+  MessageCircle,
+  Heart,
+  Repeat2,
+  BarChart3,
 } from "lucide-react";
 import type { TweetSuggestion } from "@/lib/db/schema";
 
@@ -77,7 +80,6 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
     try {
       const result = await postTweetSuggestion(suggestion.id);
       if (!result.success) {
-        // If direct posting fails, open Twitter intent
         window.open(generateTwitterShareUrl(suggestion.content), "_blank");
       }
     } finally {
@@ -94,93 +96,143 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
     }
   };
 
-  const toneColors: Record<string, string> = {
-    casual: "bg-blue-100 text-blue-800",
-    professional: "bg-purple-100 text-purple-800",
-    excited: "bg-orange-100 text-orange-800",
-    technical: "bg-green-100 text-green-800",
+  const toneConfig: Record<string, { color: string; label: string }> = {
+    casual: { color: "bg-blue-500/15 text-blue-400 border-blue-500/30", label: "casual" },
+    professional: { color: "bg-purple-500/15 text-purple-400 border-purple-500/30", label: "pro" },
+    excited: { color: "bg-accent/15 text-accent border-accent/30", label: "excited" },
+    technical: { color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30", label: "tech" },
   };
 
-  const statusColors: Record<string, "default" | "success" | "warning" | "destructive"> = {
-    pending: "default",
-    accepted: "success",
-    posted: "success",
-    rejected: "destructive",
-    scheduled: "warning",
+  const statusConfig: Record<string, { variant: "default" | "success" | "warning" | "destructive" | "muted"; label: string }> = {
+    pending: { variant: "muted", label: "draft" },
+    accepted: { variant: "success", label: "ready" },
+    posted: { variant: "success", label: "posted" },
+    rejected: { variant: "destructive", label: "rejected" },
+    scheduled: { variant: "warning", label: "scheduled" },
   };
 
   if (suggestion.status === "rejected") {
     return null;
   }
 
+  const charCountClass = charCount > 280 ? "text-destructive" : charCount > 250 ? "text-secondary" : "text-muted-foreground";
+
   return (
-    <div className="bg-white border rounded-lg p-4 space-y-3">
-      <div className="flex items-center justify-between">
+    <div className="tweet-card group">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 pb-0">
         <div className="flex items-center gap-2">
-          <Badge className={toneColors[suggestion.tone] || toneColors.casual}>
-            {suggestion.tone}
+          <Badge className={toneConfig[suggestion.tone]?.color || toneConfig.casual.color}>
+            {toneConfig[suggestion.tone]?.label || suggestion.tone}
           </Badge>
           {suggestion.tweetType && (
-            <Badge variant="secondary">{suggestion.tweetType}</Badge>
+            <Badge variant="muted" className="text-[10px] uppercase tracking-wider">
+              {suggestion.tweetType}
+            </Badge>
           )}
         </div>
-        <Badge variant={statusColors[suggestion.status]}>
-          {suggestion.status}
+        <Badge variant={statusConfig[suggestion.status]?.variant || "muted"}>
+          {statusConfig[suggestion.status]?.label || suggestion.status}
         </Badge>
       </div>
 
-      {isEditing ? (
-        <div className="space-y-2">
-          <Textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            className="min-h-[100px]"
-          />
-          <div className="flex items-center justify-between">
-            <span
-              className={`text-sm ${isValid ? "text-muted-foreground" : "text-red-500"}`}
-            >
-              {charCount}/280
-            </span>
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setIsEditing(false);
-                  setEditContent(suggestion.content);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSaveEdit}
-                disabled={!isValid}
-                isLoading={loading}
-              >
-                Save
-              </Button>
+      {/* Content */}
+      <div className="p-4">
+        {isEditing ? (
+          <div className="space-y-3">
+            <Textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              className="min-h-[120px] bg-input border-border focus:border-accent resize-none"
+              placeholder="Write your tweet..."
+            />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className={`font-mono text-xs ${charCountClass}`}>
+                  {charCount}/280
+                </span>
+                {charCount > 280 && (
+                  <span className="text-[10px] text-destructive uppercase tracking-wider">
+                    Too long
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditContent(suggestion.content);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSaveEdit}
+                  disabled={!isValid}
+                  isLoading={loading}
+                >
+                  Save
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-          {suggestion.content}
-        </p>
-      )}
+        ) : (
+          <>
+            <p className="text-[15px] leading-relaxed whitespace-pre-wrap text-foreground">
+              {suggestion.content}
+            </p>
 
+            {/* Fake tweet engagement preview */}
+            <div className="flex items-center gap-6 mt-4 pt-3 border-t border-border/50 text-muted-foreground">
+              <span className="flex items-center gap-1.5 text-xs">
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span className="font-mono">—</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-xs">
+                <Repeat2 className="h-3.5 w-3.5" />
+                <span className="font-mono">—</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-xs">
+                <Heart className="h-3.5 w-3.5" />
+                <span className="font-mono">—</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-xs">
+                <BarChart3 className="h-3.5 w-3.5" />
+                <span className="font-mono">—</span>
+              </span>
+              <span className="ml-auto font-mono text-xs">
+                {charCount}/280
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Actions */}
       {!isEditing && (
-        <div className="flex items-center justify-between pt-2 border-t">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border/50 bg-card-elevated/50">
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" onClick={handleCopy}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCopy}
+              className="h-8 px-2"
+            >
               {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
+                <Check className="h-4 w-4 text-success" />
               ) : (
                 <Copy className="h-4 w-4" />
               )}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditing(true)}
+              className="h-8 px-2"
+            >
               <Edit2 className="h-4 w-4" />
             </Button>
             <Button
@@ -189,25 +241,44 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
               onClick={() =>
                 window.open(generateTwitterShareUrl(suggestion.content), "_blank")
               }
+              className="h-8 px-2"
             >
               <ExternalLink className="h-4 w-4" />
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="h-8 px-2 text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
 
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             {suggestion.status === "pending" && (
               <>
-                <Button variant="ghost" size="sm" onClick={handleReject}>
-                  <X className="h-4 w-4 text-red-500" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReject}
+                  className="h-8 px-2 hover:text-destructive"
+                >
+                  <X className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={handleAccept}>
-                  <Check className="h-4 w-4 text-green-500" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAccept}
+                  className="h-8 px-2 hover:text-success"
+                >
+                  <Check className="h-4 w-4" />
                 </Button>
               </>
             )}
             {(suggestion.status === "pending" || suggestion.status === "accepted") && (
-              <Button size="sm" onClick={handlePost} isLoading={loading}>
-                <Twitter className="h-4 w-4 mr-1" />
+              <Button size="sm" onClick={handlePost} isLoading={loading} className="gap-1.5">
+                <Twitter className="h-3.5 w-3.5" />
                 Post
               </Button>
             )}
@@ -221,8 +292,10 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
                     "_blank"
                   )
                 }
+                className="gap-1.5"
               >
-                View Tweet
+                <ExternalLink className="h-3.5 w-3.5" />
+                View
               </Button>
             )}
           </div>

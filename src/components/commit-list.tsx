@@ -18,6 +18,7 @@ import {
   CheckSquare,
   Square,
   Layers,
+  Zap,
 } from "lucide-react";
 import type { Commit, TweetSuggestion, Repository } from "@/lib/db/schema";
 
@@ -29,6 +30,47 @@ interface CommitWithSuggestions extends Commit {
 interface CommitListProps {
   commits: CommitWithSuggestions[];
   showRepository?: boolean;
+}
+
+// Tweetability score ring component
+function ScoreRing({ score }: { score: number }) {
+  const radius = 14;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (score / 100) * circumference;
+  const scoreClass = score >= 70 ? "text-success" : score >= 40 ? "text-secondary" : "text-muted-foreground";
+
+  return (
+    <div className="score-ring relative w-10 h-10">
+      <svg className="w-10 h-10" viewBox="0 0 36 36">
+        {/* Background circle */}
+        <circle
+          cx="18"
+          cy="18"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          className="text-border"
+        />
+        {/* Progress circle */}
+        <circle
+          cx="18"
+          cy="18"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference - progress}
+          className={scoreClass}
+        />
+      </svg>
+      <span className={`absolute inset-0 flex items-center justify-center text-xs font-mono font-bold ${scoreClass}`}>
+        {score}
+      </span>
+    </div>
+  );
 }
 
 export function CommitList({ commits, showRepository = false }: CommitListProps) {
@@ -86,9 +128,12 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
 
   if (commits.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <GitCommit className="mx-auto h-12 w-12 mb-4 opacity-50" />
-        <p>No commits found. Sync a repository to get started.</p>
+      <div className="text-center py-16 text-muted-foreground">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-sm bg-muted flex items-center justify-center">
+          <GitCommit className="h-8 w-8 opacity-50" />
+        </div>
+        <p className="text-lg font-medium mb-1">No commits found</p>
+        <p className="text-sm">Sync a repository to get started.</p>
       </div>
     );
   }
@@ -96,22 +141,23 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
   return (
     <div className="space-y-3">
       {/* Selection toolbar */}
-      <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+      <div className="flex items-center justify-between bg-card border border-border rounded-sm p-3">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={selectedCommits.size === commits.length ? clearSelection : selectAll}
+            className="gap-1.5"
           >
             {selectedCommits.size === commits.length ? (
-              <CheckSquare className="h-4 w-4 mr-1" />
+              <CheckSquare className="h-4 w-4 text-accent" />
             ) : (
-              <Square className="h-4 w-4 mr-1" />
+              <Square className="h-4 w-4" />
             )}
-            {selectedCommits.size === commits.length ? "Deselect All" : "Select All"}
+            {selectedCommits.size === commits.length ? "Deselect" : "Select All"}
           </Button>
           {selectedCommits.size > 0 && (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground font-mono">
               {selectedCommits.size} selected
             </span>
           )}
@@ -121,13 +167,14 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
             size="sm"
             onClick={handleGenerateCombined}
             disabled={generatingCombined}
+            className="gap-1.5"
           >
             {generatingCombined ? (
-              <Sparkles className="h-4 w-4 mr-1 animate-pulse" />
+              <Sparkles className="h-4 w-4 animate-pulse" />
             ) : (
-              <Layers className="h-4 w-4 mr-1" />
+              <Layers className="h-4 w-4" />
             )}
-            Generate Combined Tweet ({selectedCommits.size})
+            Combine ({selectedCommits.size})
           </Button>
         )}
       </div>
@@ -136,63 +183,74 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
         const isExpanded = expandedCommit === commit.id;
         const { label, className } = getTweetabilityLabel(commit.tweetabilityScore);
         const hasSuggestions = commit.tweetSuggestions.length > 0;
-
         const isSelected = selectedCommits.has(commit.id);
 
         return (
-          <Card key={commit.id} className={`overflow-hidden ${isSelected ? "ring-2 ring-brand-500" : ""}`}>
+          <Card
+            key={commit.id}
+            variant={isSelected ? "interactive" : "default"}
+            className={`overflow-hidden transition-all ${isSelected ? "ring-1 ring-accent/50" : ""}`}
+          >
             <div
-              className="p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+              className="p-4 cursor-pointer hover:bg-card-elevated/50 transition-colors"
               onClick={() => setExpandedCommit(isExpanded ? null : commit.id)}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
+                  {/* Checkbox */}
                   <button
                     onClick={(e) => toggleCommitSelection(commit.id, e)}
                     className="mt-1 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {isSelected ? (
-                      <CheckSquare className="h-5 w-5 text-brand-500" />
+                      <CheckSquare className="h-5 w-5 text-accent" />
                     ) : (
                       <Square className="h-5 w-5" />
                     )}
                   </button>
+
+                  {/* Tweetability score */}
+                  <ScoreRing score={commit.tweetabilityScore || 0} />
+
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">
+                    {/* Commit title */}
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-base">
                         {getCommitTypeEmoji(commit.commitType)}
                       </span>
-                      <p className="font-medium truncate">
+                      <p className="font-medium truncate text-foreground">
                         {commit.aiSummary || commit.message.split("\n")[0]}
                       </p>
                     </div>
 
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    {showRepository && commit.repository && (
-                      <span className="flex items-center gap-1">
-                        <FileCode className="h-3 w-3" />
-                        {commit.repository.name}
+                    {/* Commit metadata */}
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      {showRepository && commit.repository && (
+                        <span className="flex items-center gap-1">
+                          <FileCode className="h-3 w-3" />
+                          <span className="font-mono text-xs">{commit.repository.name}</span>
+                        </span>
+                      )}
+                      <span className="font-mono text-xs">{formatRelativeTime(commit.committedAt)}</span>
+                      <span className="flex items-center gap-1 font-mono text-xs">
+                        <Plus className="h-3 w-3 text-success" />
+                        {commit.additions}
+                        <Minus className="h-3 w-3 text-destructive ml-1" />
+                        {commit.deletions}
                       </span>
-                    )}
-                    <span>{formatRelativeTime(commit.committedAt)}</span>
-                    <span className="flex items-center gap-1">
-                      <Plus className="h-3 w-3 text-green-600" />
-                      {commit.additions}
-                      <Minus className="h-3 w-3 text-red-600 ml-1" />
-                      {commit.deletions}
-                    </span>
-                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                      {commit.sha.slice(0, 7)}
-                    </code>
-                  </div>
+                      <code className="text-[10px] bg-muted px-1.5 py-0.5 rounded-sm font-mono">
+                        {commit.sha.slice(0, 7)}
+                      </code>
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge className={className}>{label}</Badge>
                   {hasSuggestions && (
-                    <Badge variant="success">
-                      {commit.tweetSuggestions.length} tweets
+                    <Badge variant="success" className="gap-1">
+                      <Zap className="h-3 w-3" />
+                      {commit.tweetSuggestions.length}
                     </Badge>
                   )}
                   {isExpanded ? (
@@ -205,43 +263,49 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
             </div>
 
             {isExpanded && (
-              <CardContent className="border-t bg-muted/30">
+              <CardContent className="border-t border-border/50 bg-background/50 pt-4">
                 {commit.message !== commit.aiSummary && (
                   <div className="mb-4">
-                    <p className="text-sm text-muted-foreground mb-1">
-                      Original commit message:
+                    <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">
+                      Original commit message
                     </p>
-                    <pre className="text-sm bg-muted p-3 rounded-md whitespace-pre-wrap">
+                    <pre className="text-sm bg-muted/50 p-3 rounded-sm whitespace-pre-wrap font-mono text-muted-foreground border border-border/50">
                       {commit.message}
                     </pre>
                   </div>
                 )}
 
                 {!hasSuggestions ? (
-                  <div className="text-center py-6">
-                    <Sparkles className="mx-auto h-8 w-8 text-brand-500 mb-2" />
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-sm bg-accent/10 flex items-center justify-center">
+                      <Sparkles className="h-6 w-6 text-accent" />
+                    </div>
                     <p className="text-muted-foreground mb-4">
                       Generate tweet suggestions for this commit
                     </p>
                     <Button
                       onClick={() => handleGenerateTweets(commit.id)}
                       isLoading={generating === commit.id}
+                      className="gap-2"
                     >
-                      <Sparkles className="mr-2 h-4 w-4" />
+                      <Sparkles className="h-4 w-4" />
                       Generate Tweets
                     </Button>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-medium">Tweet Suggestions</h4>
+                      <h4 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+                        Tweet Suggestions
+                      </h4>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleGenerateTweets(commit.id)}
                         isLoading={generating === commit.id}
+                        className="gap-1 text-xs"
                       >
-                        <Sparkles className="mr-1 h-3 w-3" />
+                        <Sparkles className="h-3 w-3" />
                         Regenerate
                       </Button>
                     </div>

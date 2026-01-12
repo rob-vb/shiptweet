@@ -1,22 +1,24 @@
 import { cn } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "secondary" | "success" | "warning" | "destructive";
+  variant?: "default" | "secondary" | "success" | "warning" | "destructive" | "accent" | "muted";
 }
 
 export function Badge({ className, variant = "default", ...props }: BadgeProps) {
   const variants = {
-    default: "bg-brand-100 text-brand-800 border-brand-200",
-    secondary: "bg-secondary text-secondary-foreground border-transparent",
-    success: "bg-green-100 text-green-800 border-green-200",
-    warning: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    destructive: "bg-red-100 text-red-800 border-red-200",
+    default: "bg-accent/15 text-accent border-accent/30",
+    secondary: "bg-secondary/15 text-secondary border-secondary/30",
+    success: "bg-success/15 text-success border-success/30",
+    warning: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
+    destructive: "bg-destructive/15 text-destructive border-destructive/30",
+    accent: "bg-accent/15 text-accent border-accent/30",
+    muted: "bg-muted text-muted-foreground border-border",
   };
 
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors",
+        "inline-flex items-center rounded-sm border px-2 py-0.5 text-xs font-medium transition-colors",
         variants[variant],
         className
       )}
