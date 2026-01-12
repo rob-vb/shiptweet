@@ -84,7 +84,6 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-feature-settings: "ss01", "ss02", "cv01";
   }
 
   /* Typographic scale */
