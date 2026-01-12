@@ -107,7 +107,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return true;
       } catch (error) {
-        console.error("Sign in error:", error);
+        console.error("Sign in database error:", error);
+        console.error("Error details:", {
+          name: (error as Error)?.name,
+          message: (error as Error)?.message,
+          email: email,
+          provider: account?.provider,
+        });
         return false;
       }
     },
