@@ -27,7 +27,7 @@ export function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2">
               <Zap className="h-8 w-8 text-brand-500" />
-              <span className="text-xl font-bold">ShipTweet</span>
+              <span className="text-xl font-bold">Commeet</span>
             </Link>
 
             {session && (

@@ -27,7 +27,7 @@ export default async function HomePage() {
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-2">
               <Zap className="h-8 w-8 text-brand-500" />
-              <span className="text-xl font-bold">ShipTweet</span>
+              <span className="text-xl font-bold">Commeet</span>
             </div>
             <Link href="/auth/signin">
               <Button>
@@ -264,7 +264,7 @@ export default async function HomePage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
               <Zap className="h-6 w-6 text-brand-500" />
-              <span className="font-semibold">ShipTweet</span>
+              <span className="font-semibold">Commeet</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Built with love for the indie hacker community

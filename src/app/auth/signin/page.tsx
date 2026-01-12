@@ -10,7 +10,7 @@ export default function SignInPage() {
         <CardHeader className="text-center">
           <Link href="/" className="flex items-center justify-center gap-2 mb-4">
             <Zap className="h-10 w-10 text-brand-500" />
-            <span className="text-2xl font-bold">ShipTweet</span>
+            <span className="text-2xl font-bold">Commeet</span>
           </Link>
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>

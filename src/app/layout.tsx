@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "ShipTweet - Build in Public, Effortlessly",
+  title: "Commeet - Build in Public, Effortlessly",
   description:
-    "Turn your GitHub commits into engaging tweets. Ship code, we'll write the tweet.",
+    "Turn your GitHub commits into engaging tweets. Commit + Tweet = Commeet.",
   keywords: ["indie hacker", "build in public", "twitter", "github", "developer tools"],
   openGraph: {
-    title: "ShipTweet - Build in Public, Effortlessly",
+    title: "Commeet - Build in Public, Effortlessly",
     description: "Turn your GitHub commits into engaging tweets.",
     type: "website",
   },
@@ -24,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
