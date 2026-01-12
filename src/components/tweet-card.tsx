@@ -103,12 +103,12 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
     technical: { color: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30", label: "tech" },
   };
 
-  const statusConfig: Record<string, { variant: "default" | "success" | "warning" | "destructive" | "muted"; label: string }> = {
-    pending: { variant: "muted", label: "draft" },
-    accepted: { variant: "success", label: "ready" },
-    posted: { variant: "success", label: "posted" },
+  const statusConfig: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; label: string }> = {
+    pending: { variant: "outline", label: "draft" },
+    accepted: { variant: "secondary", label: "ready" },
+    posted: { variant: "secondary", label: "posted" },
     rejected: { variant: "destructive", label: "rejected" },
-    scheduled: { variant: "warning", label: "scheduled" },
+    scheduled: { variant: "default", label: "scheduled" },
   };
 
   if (suggestion.status === "rejected") {
@@ -126,12 +126,12 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
             {toneConfig[suggestion.tone]?.label || suggestion.tone}
           </Badge>
           {suggestion.tweetType && (
-            <Badge variant="muted" className="text-[10px] uppercase tracking-wider">
+            <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
               {suggestion.tweetType}
             </Badge>
           )}
         </div>
-        <Badge variant={statusConfig[suggestion.status]?.variant || "muted"}>
+        <Badge variant={statusConfig[suggestion.status]?.variant || "outline"}>
           {statusConfig[suggestion.status]?.label || suggestion.status}
         </Badge>
       </div>
@@ -171,10 +171,9 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
                 <Button
                   size="sm"
                   onClick={handleSaveEdit}
-                  disabled={!isValid}
-                  isLoading={loading}
+                  disabled={!isValid || loading}
                 >
-                  Save
+                  {loading ? "Saving..." : "Save"}
                 </Button>
               </div>
             </div>
@@ -277,9 +276,9 @@ export function TweetCard({ suggestion, showCommitInfo = false }: TweetCardProps
               </>
             )}
             {(suggestion.status === "pending" || suggestion.status === "accepted") && (
-              <Button size="sm" onClick={handlePost} isLoading={loading} className="gap-1.5">
+              <Button size="sm" onClick={handlePost} disabled={loading} className="gap-1.5">
                 <Twitter className="h-3.5 w-3.5" />
-                Post
+                {loading ? "Posting..." : "Post"}
               </Button>
             )}
             {suggestion.status === "posted" && suggestion.tweetId && (

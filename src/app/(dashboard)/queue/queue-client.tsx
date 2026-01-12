@@ -105,7 +105,7 @@ export function QueueClient({
               <TabsTrigger key={tab.id} value={tab.id}>
                 <Icon className="h-4 w-4" />
                 <span>{tab.label}</span>
-                <Badge variant="muted" className="ml-1">
+                <Badge variant="outline" className="ml-1">
                   {tab.count}
                 </Badge>
               </TabsTrigger>

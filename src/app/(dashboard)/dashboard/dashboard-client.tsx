@@ -150,7 +150,7 @@ export function DashboardClient({
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card variant="embossed" className="group hover-lift">
+        <Card className="group hover:shadow-md transition-shadow">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-sm bg-accent/10 flex items-center justify-center">
@@ -164,7 +164,7 @@ export function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card variant="embossed" className="group hover-lift">
+        <Card className="group hover:shadow-md transition-shadow">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-sm bg-secondary/10 flex items-center justify-center">
@@ -178,7 +178,7 @@ export function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card variant="embossed" className="group hover-lift">
+        <Card className="group hover:shadow-md transition-shadow">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-sm bg-blue-500/10 flex items-center justify-center">
@@ -192,7 +192,7 @@ export function DashboardClient({
           </CardContent>
         </Card>
 
-        <Card variant="embossed" className="group hover-lift">
+        <Card className="group hover:shadow-md transition-shadow">
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-sm bg-success/10 flex items-center justify-center">

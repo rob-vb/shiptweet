@@ -20,7 +20,7 @@ export default function SignInPage() {
           Back to home
         </Link>
 
-        <Card variant="embossed" className="w-full">
+        <Card className="w-full">
           <CardHeader className="text-center pb-2">
             <Link href="/" className="flex items-center justify-center gap-2 mb-6">
               <div className="w-10 h-10 bg-accent rounded-sm flex items-center justify-center shadow-glow">
