@@ -273,3 +273,139 @@ export async function processMultipleCommits(
 
   return { processed, totalSuggestions };
 }
+
+export async function generateCombinedTweetSuggestions(
+  commitList: Commit[],
+  voiceSettings?: VoiceSettings | null
+): Promise<TweetSuggestion[]> {
+  const model = getModel();
+
+  const voiceContext = voiceSettings
+    ? `
+Voice/Style preferences:
+- Product: ${voiceSettings.productDescription || "A software product"}
+- Target audience: ${voiceSettings.targetAudience || "Developers and indie hackers"}
+- Preferred tone: ${voiceSettings.preferredTone || "casual"}
+${
+  voiceSettings.exampleTweets?.length
+    ? `- Example tweets they like:\n${voiceSettings.exampleTweets.map((t) => `  "${t}"`).join("\n")}`
+    : ""
+}`
+    : "";
+
+  const commitsContext = commitList
+    .map((c, i) => {
+      const files = c.filesChanged?.slice(0, 3).map((f) => f.filename).join(", ") || "";
+      return `${i + 1}. ${c.aiSummary || c.message}${files ? ` (files: ${files})` : ""} [+${c.additions || 0}/-${c.deletions || 0}]`;
+    })
+    .join("\n");
+
+  const prompt = `Generate 4 tweet variations summarizing these related commits as ONE cohesive "build in public" update:
+
+Commits being combined:
+${commitsContext}
+
+Total commits: ${commitList.length}
+${voiceContext}
+
+Generate 4 tweets (one each: casual, professional, excited, technical).
+Each tweet must:
+- Be under 280 characters
+- Summarize the COMBINED work, not list each commit separately
+- Feel like a natural progress update, not a changelog
+- Sound human and authentic
+
+Respond with JSON array only:
+[
+  {"content": "tweet text", "tone": "casual", "tweetType": "progress"},
+  {"content": "tweet text", "tone": "professional", "tweetType": "shipped"},
+  {"content": "tweet text", "tone": "excited", "tweetType": "milestone"},
+  {"content": "tweet text", "tone": "technical", "tweetType": "technical"}
+]
+
+Guidelines:
+- Focus on the overall achievement, not individual commits
+- Use phrases like "Big update:", "Shipped a bunch of improvements:", "Progress report:"
+- Mention specific features if they stand out
+- Keep it concise - this is a summary, not a list`;
+
+  try {
+    const { text } = await generateText({
+      model,
+      prompt,
+      maxTokens: 1000,
+    });
+
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error("No JSON array found in response");
+    }
+
+    const suggestions: TweetSuggestion[] = JSON.parse(jsonMatch[0]);
+
+    return suggestions
+      .filter((s) => s.content && s.content.length <= 280)
+      .map((s) => ({
+        content: s.content.trim(),
+        tone: TWEET_TONES.includes(s.tone as TweetTone) ? (s.tone as TweetTone) : "casual",
+        tweetType: TWEET_TYPES.includes(s.tweetType as TweetType)
+          ? (s.tweetType as TweetType)
+          : "progress",
+      }));
+  } catch (error) {
+    console.error("Error generating combined tweets:", error);
+    const summary = commitList.length <= 3
+      ? commitList.map((c) => c.aiSummary || c.message.slice(0, 50)).join(", ")
+      : `${commitList.length} improvements`;
+    return [
+      {
+        content: `Shipped: ${summary.slice(0, 230)} #buildinpublic`,
+        tone: "casual",
+        tweetType: "progress",
+      },
+    ];
+  }
+}
+
+export async function processCombinedCommits(
+  commitIds: string[],
+  userId: string
+): Promise<{ suggestionsCreated: number }> {
+  const commitList = await Promise.all(
+    commitIds.map((id) =>
+      db.query.commits.findFirst({ where: eq(commits.id, id) })
+    )
+  );
+
+  const validCommits = commitList.filter((c): c is Commit => c !== undefined);
+
+  if (validCommits.length === 0) {
+    throw new Error("No valid commits found");
+  }
+
+  // Get user voice settings
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
+
+  // Generate combined tweet suggestions
+  const suggestions = await generateCombinedTweetSuggestions(validCommits, user?.voiceSettings);
+
+  // Save suggestions - link to the first commit for reference
+  if (suggestions.length > 0) {
+    await db.insert(tweetSuggestions).values(
+      suggestions.map((s) => ({
+        userId,
+        commitId: validCommits[0].id, // Link to first commit
+        content: s.content,
+        tone: s.tone,
+        tweetType: s.tweetType,
+        status: "pending",
+      }))
+    );
+  }
+
+  return {
+    suggestionsCreated: suggestions.length,
+  };
+}
