@@ -70,13 +70,13 @@ export function Navbar() {
                 {/* Connection badges - desktop */}
                 <div className="hidden lg:flex items-center gap-2">
                   {session.user.hasGithub && (
-                    <Badge variant="success" className="gap-1.5">
+                    <Badge variant="secondary" className="gap-1.5">
                       <Github className="h-3 w-3" />
                       <span className="text-[10px] uppercase tracking-wider">Connected</span>
                     </Badge>
                   )}
                   {session.user.hasTwitter && (
-                    <Badge variant="accent" className="gap-1.5">
+                    <Badge className="gap-1.5">
                       <Twitter className="h-3 w-3" />
                       <span className="text-[10px] uppercase tracking-wider">Connected</span>
                     </Badge>
@@ -166,13 +166,13 @@ export function Navbar() {
               {/* Mobile badges */}
               <div className="flex items-center gap-2 px-3 pt-3 mt-2 border-t border-border/50">
                 {session.user.hasGithub && (
-                  <Badge variant="success" className="gap-1">
+                  <Badge variant="secondary" className="gap-1">
                     <Github className="h-3 w-3" />
                     GitHub
                   </Badge>
                 )}
                 {session.user.hasTwitter && (
-                  <Badge variant="accent" className="gap-1">
+                  <Badge className="gap-1">
                     <Twitter className="h-3 w-3" />
                     X
                   </Badge>

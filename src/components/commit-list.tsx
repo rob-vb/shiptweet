@@ -188,8 +188,7 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
         return (
           <Card
             key={commit.id}
-            variant={isSelected ? "interactive" : "default"}
-            className={`overflow-hidden transition-all ${isSelected ? "ring-1 ring-accent/50" : ""}`}
+            className={`overflow-hidden transition-all ${isSelected ? "ring-1 ring-primary/50 bg-muted/50" : ""}`}
           >
             <div
               className="p-4 cursor-pointer hover:bg-card-elevated/50 transition-colors"
@@ -248,7 +247,7 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
                 <div className="flex items-center gap-2">
                   <Badge className={className}>{label}</Badge>
                   {hasSuggestions && (
-                    <Badge variant="success" className="gap-1">
+                    <Badge variant="secondary" className="gap-1">
                       <Zap className="h-3 w-3" />
                       {commit.tweetSuggestions.length}
                     </Badge>
@@ -285,11 +284,11 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
                     </p>
                     <Button
                       onClick={() => handleGenerateTweets(commit.id)}
-                      isLoading={generating === commit.id}
+                      disabled={generating === commit.id}
                       className="gap-2"
                     >
                       <Sparkles className="h-4 w-4" />
-                      Generate Tweets
+                      {generating === commit.id ? "Generating..." : "Generate Tweets"}
                     </Button>
                   </div>
                 ) : (
@@ -302,11 +301,11 @@ export function CommitList({ commits, showRepository = false }: CommitListProps)
                         variant="ghost"
                         size="sm"
                         onClick={() => handleGenerateTweets(commit.id)}
-                        isLoading={generating === commit.id}
+                        disabled={generating === commit.id}
                         className="gap-1 text-xs"
                       >
                         <Sparkles className="h-3 w-3" />
-                        Regenerate
+                        {generating === commit.id ? "Regenerating..." : "Regenerate"}
                       </Button>
                     </div>
                     <div className="grid gap-3 md:grid-cols-2">

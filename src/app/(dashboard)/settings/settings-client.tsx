@@ -82,7 +82,7 @@ export function SettingsClient({
               </div>
             </div>
             {hasGithub ? (
-              <Badge variant="success" className="gap-1">
+              <Badge variant="secondary" className="gap-1">
                 <Check className="h-3 w-3" />
                 Connected
               </Badge>
@@ -109,7 +109,7 @@ export function SettingsClient({
               </div>
             </div>
             {hasTwitter ? (
-              <Badge variant="success" className="gap-1">
+              <Badge variant="secondary" className="gap-1">
                 <Check className="h-3 w-3" />
                 Connected
               </Badge>
