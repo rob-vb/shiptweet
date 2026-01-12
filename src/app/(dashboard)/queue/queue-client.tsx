@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TweetCard } from "@/components/tweet-card";
 import { MessageSquare, Send, Clock, CheckCircle } from "lucide-react";
 import type { TweetSuggestion, Commit, Repository } from "@/lib/db/schema";
@@ -22,10 +22,7 @@ type TabType = "pending" | "accepted" | "scheduled" | "posted";
 export function QueueClient({
   suggestions,
   postedSuggestions,
-  hasTwitter,
 }: QueueClientProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("pending");
-
   const pending = suggestions.filter((s) => s.status === "pending");
   const accepted = suggestions.filter((s) => s.status === "accepted");
   const scheduled = suggestions.filter((s) => s.status === "scheduled");
@@ -37,8 +34,8 @@ export function QueueClient({
     { id: "posted", label: "Posted", count: postedSuggestions.length, icon: Send },
   ];
 
-  const getCurrentSuggestions = () => {
-    switch (activeTab) {
+  const getSuggestionsByTab = (tabId: TabType) => {
+    switch (tabId) {
       case "pending":
         return pending;
       case "accepted":
@@ -52,7 +49,43 @@ export function QueueClient({
     }
   };
 
-  const currentSuggestions = getCurrentSuggestions();
+  const renderEmptyState = (tabId: TabType) => (
+    <Card>
+      <CardContent className="py-12 text-center">
+        <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+        <h3 className="font-medium mb-2">No {tabId} tweets</h3>
+        <p className="text-sm text-muted-foreground">
+          {tabId === "pending" &&
+            "Generate tweets from your commits to see them here."}
+          {tabId === "accepted" &&
+            "Accept tweet suggestions to add them to your queue."}
+          {tabId === "scheduled" && "Schedule tweets for later posting."}
+          {tabId === "posted" && "Your posted tweets will appear here."}
+        </p>
+      </CardContent>
+    </Card>
+  );
+
+  const renderSuggestions = (tabSuggestions: SuggestionWithCommit[]) => (
+    <div className="grid gap-4 md:grid-cols-2">
+      {tabSuggestions.map((suggestion) => (
+        <div key={suggestion.id} className="space-y-2">
+          {suggestion.commit?.repository && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="font-medium">
+                {suggestion.commit.repository.name}
+              </span>
+              <span>-</span>
+              <span className="truncate">
+                {suggestion.commit.aiSummary || suggestion.commit.message}
+              </span>
+            </div>
+          )}
+          <TweetCard suggestion={suggestion} />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -63,71 +96,35 @@ export function QueueClient({
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b pb-4">
+      <Tabs defaultValue="pending">
+        <TabsList className="flex flex-wrap">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+
+            return (
+              <TabsTrigger key={tab.id} value={tab.id}>
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+                <Badge variant="muted" className="ml-1">
+                  {tab.count}
+                </Badge>
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+
         {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
+          const tabSuggestions = getSuggestionsByTab(tab.id);
 
           return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                isActive
-                  ? "bg-brand-500 text-white"
-                  : "bg-muted hover:bg-muted/80 text-muted-foreground"
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-              <span className="font-medium">{tab.label}</span>
-              <Badge
-                variant={isActive ? "secondary" : "default"}
-                className={isActive ? "bg-white/20 text-white" : ""}
-              >
-                {tab.count}
-              </Badge>
-            </button>
+            <TabsContent key={tab.id} value={tab.id}>
+              {tabSuggestions.length === 0
+                ? renderEmptyState(tab.id)
+                : renderSuggestions(tabSuggestions)}
+            </TabsContent>
           );
         })}
-      </div>
-
-      {/* Content */}
-      {currentSuggestions.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="font-medium mb-2">No {activeTab} tweets</h3>
-            <p className="text-sm text-muted-foreground">
-              {activeTab === "pending" &&
-                "Generate tweets from your commits to see them here."}
-              {activeTab === "accepted" &&
-                "Accept tweet suggestions to add them to your queue."}
-              {activeTab === "scheduled" && "Schedule tweets for later posting."}
-              {activeTab === "posted" && "Your posted tweets will appear here."}
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {currentSuggestions.map((suggestion) => (
-            <div key={suggestion.id} className="space-y-2">
-              {suggestion.commit?.repository && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="font-medium">
-                    {suggestion.commit.repository.name}
-                  </span>
-                  <span>-</span>
-                  <span className="truncate">
-                    {suggestion.commit.aiSummary || suggestion.commit.message}
-                  </span>
-                </div>
-              )}
-              <TweetCard suggestion={suggestion} />
-            </div>
-          ))}
-        </div>
-      )}
+      </Tabs>
     </div>
   );
 }
