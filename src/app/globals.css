@@ -2,50 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Terminal-inspired theme for Commeet */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 48%;
-    --radius: 0.5rem;
-  }
+    /* Dark terminal background */
+    --background: 220 20% 6%;
+    --foreground: 120 60% 75%;
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 48%;
+    /* Card styling - slightly lighter than bg */
+    --card: 220 20% 8%;
+    --card-foreground: 120 60% 75%;
+
+    --popover: 220 20% 10%;
+    --popover-foreground: 120 60% 75%;
+
+    /* Primary - phosphor green */
+    --primary: 120 100% 55%;
+    --primary-foreground: 220 20% 6%;
+
+    /* Secondary - dimmer green */
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 120 40% 65%;
+
+    /* Muted text */
+    --muted: 220 15% 12%;
+    --muted-foreground: 120 20% 50%;
+
+    /* Accent - amber/gold for highlights */
+    --accent: 45 100% 55%;
+    --accent-foreground: 220 20% 6%;
+
+    /* Destructive - red terminal error */
+    --destructive: 0 90% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders - subtle green tint */
+    --border: 120 30% 20%;
+    --input: 120 30% 15%;
+    --ring: 120 100% 55%;
+
+    /* No rounded corners - terminal style */
+    --radius: 0px;
   }
 }
 
@@ -53,62 +50,332 @@
   * {
     @apply border-border;
   }
+
+  html {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Scanline effect overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    opacity: 0.3;
+  }
+
+  /* Subtle CRT glow */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      rgba(0, 20, 0, 0.15) 100%
+    );
+  }
+
+  /* Selection color */
+  ::selection {
+    background: hsl(120 100% 55% / 0.3);
+    color: hsl(120 100% 75%);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(220 20% 8%);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(120 30% 25%);
+    border: 1px solid hsl(120 30% 35%);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(120 40% 35%);
   }
 }
 
 @layer components {
+  /* Terminal-style buttons */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+    @apply inline-flex items-center justify-center text-sm font-medium transition-all;
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary;
+    @apply disabled:opacity-50 disabled:pointer-events-none;
+    @apply border border-primary/50;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .btn-primary {
-    @apply btn bg-brand-500 text-white hover:bg-brand-600 h-10 py-2 px-4;
+    @apply btn bg-primary text-background hover:bg-primary/80 h-10 py-2 px-4;
+    @apply shadow-[0_0_10px_hsl(120_100%_55%_/_0.3)];
+    @apply hover:shadow-[0_0_20px_hsl(120_100%_55%_/_0.5)];
   }
 
   .btn-secondary {
     @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 py-2 px-4;
+    @apply border-secondary-foreground/30;
   }
 
   .btn-outline {
-    @apply btn border border-input hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+    @apply btn border border-primary/50 text-primary hover:bg-primary/10 h-10 py-2 px-4;
   }
 
   .btn-ghost {
-    @apply btn hover:bg-accent hover:text-accent-foreground h-10 py-2 px-4;
+    @apply btn border-transparent hover:bg-primary/10 hover:text-primary h-10 py-2 px-4;
   }
 
   .btn-sm {
-    @apply h-9 px-3 rounded-md;
+    @apply h-8 px-3 text-xs;
   }
 
   .btn-lg {
-    @apply h-11 px-8 rounded-md;
+    @apply h-11 px-8;
   }
 
+  /* Terminal card with ASCII-style border */
   .card {
-    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+    @apply border bg-card text-card-foreground;
+    @apply shadow-[0_0_15px_hsl(120_100%_55%_/_0.05)];
+    position: relative;
   }
 
+  /* ASCII corner decorations */
+  .card::before {
+    content: "┌";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    color: hsl(var(--primary));
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .card::after {
+    content: "┘";
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    color: hsl(var(--primary));
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* Terminal input */
   .input {
-    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-10 w-full border border-input bg-background px-3 py-2 text-sm;
+    @apply placeholder:text-muted-foreground;
+    @apply focus-visible:outline-none focus-visible:border-primary;
+    @apply focus-visible:shadow-[0_0_10px_hsl(120_100%_55%_/_0.2)];
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .label {
-    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+    @apply text-sm font-medium leading-none text-muted-foreground uppercase tracking-wider;
+    @apply peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
+  /* Terminal prompt prefix */
+  .prompt::before {
+    content: "❯ ";
+    color: hsl(var(--primary));
+  }
+
+  /* Blinking cursor */
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.2em;
+    background: hsl(var(--primary));
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* Typing effect */
+  .typing {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 2s steps(30, end);
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  /* Glow text effect */
+  .glow {
+    text-shadow:
+      0 0 5px hsl(120 100% 55% / 0.5),
+      0 0 10px hsl(120 100% 55% / 0.3),
+      0 0 20px hsl(120 100% 55% / 0.2);
+  }
+
+  .glow-amber {
+    text-shadow:
+      0 0 5px hsl(45 100% 55% / 0.5),
+      0 0 10px hsl(45 100% 55% / 0.3),
+      0 0 20px hsl(45 100% 55% / 0.2);
+  }
+
+  /* Status indicators */
+  .status-online {
+    @apply text-primary;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      text-shadow: 0 0 5px hsl(120 100% 55% / 0.5);
+    }
+    50% {
+      text-shadow: 0 0 20px hsl(120 100% 55% / 0.8);
+    }
+  }
+
+  /* Terminal box/panel */
+  .terminal-box {
+    @apply border border-primary/30 bg-card p-4;
+    position: relative;
+  }
+
+  .terminal-box::before {
+    content: "[ COMMEET://";
+    @apply text-xs text-primary/70 uppercase tracking-widest;
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: hsl(var(--card));
+    padding: 0 8px;
+  }
+
+  /* Command line style list */
+  .cmd-list {
+    @apply space-y-1 font-mono text-sm;
+  }
+
+  .cmd-list li::before {
+    content: "$ ";
+    @apply text-primary/60;
+  }
+
+  /* Matrix-style falling effect (subtle) */
+  .matrix-bg {
+    background-image:
+      linear-gradient(0deg, transparent 24%,
+      rgba(32, 255, 77, 0.03) 25%,
+      rgba(32, 255, 77, 0.03) 26%,
+      transparent 27%, transparent 74%,
+      rgba(32, 255, 77, 0.03) 75%,
+      rgba(32, 255, 77, 0.03) 76%,
+      transparent 77%, transparent);
+    background-size: 50px 50px;
+  }
+
+  /* ASCII art divider */
+  .ascii-divider {
+    @apply text-primary/40 text-center text-xs tracking-[0.5em] my-4;
+  }
+
+  .ascii-divider::before {
+    content: "═══════════════════════════════════════";
   }
 }
 
-/* Tweetability score badges */
+/* Tweetability score badges - terminal style */
 .score-high {
-  @apply bg-green-100 text-green-800 border-green-200;
+  @apply bg-primary/20 text-primary border-primary/50;
+  @apply shadow-[0_0_10px_hsl(120_100%_55%_/_0.2)];
 }
 
 .score-medium {
-  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  @apply bg-accent/20 text-accent border-accent/50;
+  @apply shadow-[0_0_10px_hsl(45_100%_55%_/_0.2)];
 }
 
 .score-low {
-  @apply bg-gray-100 text-gray-600 border-gray-200;
+  @apply bg-muted text-muted-foreground border-muted-foreground/30;
+}
+
+/* Flicker animation for retro feel */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  95% { opacity: 0.9; }
+  96% { opacity: 1; }
+}
+
+.flicker {
+  animation: flicker 4s infinite;
+}
+
+/* Boot sequence animation */
+@keyframes boot {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.boot-sequence > * {
+  animation: boot 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+.boot-sequence > *:nth-child(1) { animation-delay: 0.1s; }
+.boot-sequence > *:nth-child(2) { animation-delay: 0.2s; }
+.boot-sequence > *:nth-child(3) { animation-delay: 0.3s; }
+.boot-sequence > *:nth-child(4) { animation-delay: 0.4s; }
+.boot-sequence > *:nth-child(5) { animation-delay: 0.5s; }
+.boot-sequence > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Noise texture overlay */
+.noise {
+  position: relative;
+}
+
+.noise::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.02;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
