@@ -28,12 +28,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (!user.email) return false;
+      let email = user.email;
+
+      // If email is not provided (private GitHub email), fetch it from the API
+      if (!email && account?.provider === "github" && account.access_token) {
+        try {
+          const res = await fetch("https://api.github.com/user/emails", {
+            headers: {
+              Authorization: `Bearer ${account.access_token}`,
+              Accept: "application/vnd.github+json",
+            },
+          });
+          const emails = await res.json();
+          const primaryEmail = emails.find(
+            (e: { primary: boolean; verified: boolean; email: string }) =>
+              e.primary && e.verified
+          );
+          if (primaryEmail) {
+            email = primaryEmail.email;
+            user.email = email;
+          }
+        } catch (e) {
+          console.error("Failed to fetch GitHub emails:", e);
+        }
+      }
+
+      if (!email) return false;
 
       try {
         // Check if user exists
         const existingUser = await db.query.users.findFirst({
-          where: eq(users.email, user.email),
+          where: eq(users.email, email),
         });
 
         if (account?.provider === "github") {
@@ -52,7 +77,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           } else {
             // Create new user
             await db.insert(users).values({
-              email: user.email,
+              email: email,
               name: user.name,
               image: user.image,
               githubId: account.providerAccountId,
