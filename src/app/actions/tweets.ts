@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { tweetSuggestions, commits } from "@/lib/db/schema";
-import { processCommit, processMultipleCommits } from "@/lib/ai/generate-tweets";
+import { processCommit, processMultipleCommits, processCombinedCommits } from "@/lib/ai/generate-tweets";
 import { postTweet, scheduleTweet } from "@/lib/twitter";
 import { eq, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -209,5 +209,30 @@ export async function deleteSuggestion(
     return { success: true };
   } catch (error) {
     return { success: false, error: "Failed to delete suggestion" };
+  }
+}
+
+export async function generateCombinedTweet(commitIds: string[]): Promise<{
+  success: boolean;
+  suggestionsCreated?: number;
+  error?: string;
+}> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  if (commitIds.length < 2) {
+    return { success: false, error: "Select at least 2 commits to combine" };
+  }
+
+  try {
+    const result = await processCombinedCommits(commitIds, session.user.id);
+    revalidatePath("/dashboard");
+    revalidatePath("/queue");
+    return { success: true, suggestionsCreated: result.suggestionsCreated };
+  } catch (error) {
+    console.error("Error generating combined tweet:", error);
+    return { success: false, error: "Failed to generate combined tweet" };
   }
 }
